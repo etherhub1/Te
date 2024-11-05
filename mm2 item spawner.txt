@@ -223,7 +223,7 @@ local function VisualDupe()
                     if v.ItemName.Label.Text ~= "Default Knife" and v.ItemName.Label.Text ~= "Default Gun" then
                         local amount = v.Container.Amount.Text
                         if amount == "" or amount == "None" then
-                            v.Container.Amount.Text = "x2"
+                            v.Container.Amount.Text = "x1"
                         else
                             local num = tonumber(amount:match("x(%d+)"))
                             if num then
