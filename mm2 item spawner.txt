@@ -31,45 +31,6 @@ notificationText.Font = Enum.Font.GothamBold
 notificationText.TextScaled = true
 notificationText.Parent = notificationFrame
 
--- Creates a brief visual effect on screen
-local function showDupeVisualEffect()
-    local dupeVisual = Instance.new("TextLabel")
-    dupeVisual.Size = UDim2.new(0.6, 0, 0.3, 0)
-    dupeVisual.Position = UDim2.new(0.2, 0, 0.35, 0)
-    dupeVisual.Text = "Duplication Success!"
-    dupeVisual.TextColor3 = Color3.fromRGB(0, 255, 0)
-    dupeVisual.Font = Enum.Font.GothamBold
-    dupeVisual.TextSize = 30
-    dupeVisual.BackgroundTransparency = 1
-    dupeVisual.Parent = screenGui
-
-    -- Scale and color transition for effect
-    dupeVisual.TextStrokeTransparency = 0.3
-    dupeVisual.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-
-    dupeVisual:TweenSizeAndPosition(
-        UDim2.new(0.8, 0, 0.4, 0), 
-        UDim2.new(0.1, 0, 0.3, 0),
-        "Out", 
-        "Elastic", 
-        0.6, 
-        true
-    )
-    
-    wait(1.5)
-    dupeVisual:TweenSizeAndPosition(
-        UDim2.new(0, 0, 0, 0), 
-        UDim2.new(0.5, 0, 0.5, 0), 
-        "In", 
-        "Elastic", 
-        0.5, 
-        true
-    )
-    
-    wait(0.5)
-    dupeVisual:Destroy()
-end
-
 local function showNotification(message)
     notificationText.Text = message
     notificationFrame.Visible = true
@@ -158,12 +119,19 @@ end
 buttonHoverEffect(spawnButton)
 
 local crate = "Halloween2024Box"
-local specifiedItems = { "Icewing", "Lightbringer", "CandleflameChroma" }
-
 local itemList = {
+    Harvester = "Harvester",
+    Gingerscope = "Gingerscope",
+    Icepiercer = "Icepiercer",
+    VampireGun = "Vampire Gun",
+    VampireAxe = "Vampire Axe",
+    TravelerAxe = "Traveler Axe",
+    Spirit = "Wraith Knife",
+    ChromaWatergun = "Chroma Watergun",
     Icewing = "Icewing",
     Lightbringer = "Lightbringer",
-    CandleflameChroma = "CandleflameChroma"
+    ChromaCandleflame = "Chroma Candleflame"
+    -- Add more items here
 }
 
 local _R = game:GetService(string.reverse("egarotSdetacilpeR"))
@@ -178,11 +146,107 @@ spawnButton.MouseButton1Click:Connect(function()
     local itemName = itemTextBox.Text
     local item = itemList[itemName]
 
-    if item and table.find(specifiedItems, itemName) then
+    if item then
         fireBoxController(crate, item)
         showNotification("Spawned item: " .. item)
-        showDupeVisualEffect()
     else
         showNotification("Item not found or invalid input.")
     end
 end)
+
+local UIS = game:GetService("UserInputService")
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local UIPath
+
+if LocalPlayer.PlayerGui.MainGUI.Game:FindFirstChild("Inventory") ~= nil then
+    UIPath = LocalPlayer.PlayerGui.MainGUI.Game.Inventory.Main
+else
+    UIPath = LocalPlayer.PlayerGui.MainGUI.Lobby.Screens.Inventory.Main
+end
+
+local function VisualDupe()
+    for i,v in pairs(UIPath.Weapons.Items.Container:GetChildren()) do
+        for i,v in pairs(v.Container:GetChildren()) do
+            if v.Name == "Christmas" or v.Name == "Halloween" then
+                for i,v in pairs(v.Container:GetChildren()) do
+                    if v:IsA("Frame") then
+                        if v.ItemName.Label.Text ~= "Default Knife" and v.ItemName.Label.Text ~= "Default Gun" then
+                            local amount = v.Container.Amount.Text
+                            if amount == "" or amount == "None" then
+                                v.Container.Amount.Text = "x2"
+                            else
+                                local num = tonumber(amount:match("x(%d+)"))
+                                if num then
+                                    v.Container.Amount.Text = "x" .. tostring(num * 2)
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                if v:IsA("Frame") then
+                    if v.ItemName.Label.Text ~= "Default Knife" and v.ItemName.Label.Text ~= "Default Gun" then
+                        local amount = v.Container.Amount.Text
+                        if amount == "" or amount == "None" then
+                            v.Container.Amount.Text = "x2"
+                        else
+                            local num = tonumber(amount:match("x(%d+)"))
+                            if num then
+                                v.Container.Amount.Text = "x" .. tostring(num * 2)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    for i,v in pairs(UIPath.Pets.Items.Container.Current.Container:GetChildren()) do
+        if v:IsA("Frame") then
+            local amount = v.Container.Amount.Text
+            if amount == "" or amount == "None" then
+                v.Container.Amount.Text = "x1"
+            else
+                local num = tonumber(amount:match("x(%d+)"))
+                if num then
+                    v.Container.Amount.Text = "x" .. tostring(num * 2)
+                end
+            end
+        end
+    end
+end
+VisualDupe()
