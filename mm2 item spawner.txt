@@ -123,14 +123,16 @@ local itemList = {
     Harvester = "Harvester",
     Gingerscope = "Gingerscope",
     Icepiercer = "Icepiercer",
-    VampireGun = "Vampire Gun",
-    VampireAxe = "Vampire Axe",
-    TravelerAxe = "Traveler Axe",
+    VampireGun = "VampireGun",
+    VampireAxe = "VampireAxe",
+    TravelerAxe = "TravelerAxe",
     Spirit = "Wraith Knife",
-    ChromaWatergun = "Chroma Watergun",
+    ChromaWatergun = "WatergunChroma",
     Icewing = "Icewing",
     Lightbringer = "Lightbringer",
-    ChromaCandleflame = "Chroma Candleflame"
+    ChromaCandleflame = "CandleflameChroma",
+    Travelergun = "Travelergun",
+    ChromaTravelergun = "TravelergunChroma"
     -- Add more items here
 }
 
